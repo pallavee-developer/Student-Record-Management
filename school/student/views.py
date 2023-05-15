@@ -1,21 +1,23 @@
-from django.shortcuts import render,redirect
+from django.shortcuts import render, redirect
 from . models import *
-from django.contrib.auth.hashers import make_password,check_password
+from django.contrib.auth.hashers import make_password, check_password
 from django.contrib import messages
-from django.contrib.auth import authenticate,login
+from django.contrib.auth import authenticate, login
 
 
 # Create your views here.
 def index(request):
-    return render(request,'index.html')
+    return render(request, 'index.html')
+
 
 def courses(request):
-    course= Addcourse.objects.all()
-    return render(request,'courses.html',{'course':course})
+    course = Addcourse.objects.all()
+    return render(request, 'courses.html', {'course': course})
 
 
 def signup(request):
-    return render(request,'sign-up.html')
+    return render(request, 'sign-up.html')
+
 
 def dashboard(request):
     addcourses = Addcourse.objects.all()
@@ -23,46 +25,45 @@ def dashboard(request):
     totalstudent = AddStudents.objects.all().count()
     return render(request, 'dashboard.html', {'addcourses': addcourses, 'totalcourse': totalcourse, 'totalstudent': totalstudent})
 
-       
+
 def viewstudents(request):
     stu = AddStudents.objects.all()
     addcourses = Addcourse.objects.all()
     redirect("/viewstudents/")
     return render(request, 'viewstudents.html', {'stu': stu, 'addcourses': addcourses})
-    
 
 
 def Form_data(request):
-    if request.method=="POST":
-        name=request.POST['name']
-        email=request.POST['email']
-        password=make_password(request.POST['password'])
+    if request.method == "POST":
+        name = request.POST['name']
+        email = request.POST['email']
+        password = make_password(request.POST['password'])
         if Formdata.objects.filter(email=email).exists():
-            messages.error(request,"Email already Exist")
+            messages.error(request, "Email already Exist")
             return redirect('/signup')
         else:
-            Formdata.objects.create(name=name,email=email,password=password)
-            messages.success(request,'Registration successful')
+            Formdata.objects.create(name=name, email=email, password=password)
+            messages.success(request, 'Registration successful')
             return redirect('/')
 
 
-        
-        
 def loginform(request):
-    if request.method =="POST":
-        Email = request.POST['email']
-        User_password = request.POST['password']
-        if Formdata.objects.filter(email=Email).exists():
-            obj = Formdata.objects.get(email=Email)
+    if request.method == "POST":
+        User_email = request.POST['User_email']
+        password = request.POST['User_password']
+        if Formdata.objects.filter(email=User_email).exists():
+            obj = Formdata.objects.get(email=User_email)
             pwd = obj.password
-            if check_password(pwd,User_password):
+            print(obj)
+            print("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
+            if check_password(pwd, password):
                 return redirect('/dashboard/')
             else:
                 messages.error(request, 'Password incorrect')
                 return redirect('/')
-        else:
-            messages.error(request, 'Email is not registered')
-            return redirect('/')
+    else:
+        messages.error(request, 'Email is not registered')
+        return redirect('/')
 
 
 # def loginform(request):
@@ -77,17 +78,18 @@ def loginform(request):
 #             return redirect('/')
 #     else:
 #         return redirect('/')
-        
+
 def addcourses(request):
-    if request.method=='POST':
-        c_name=request.POST['CourseName']
-        c_fees=request.POST['CourseFees']
-        c_duration=request.POST['CourseDuration']
-        c_desc=request.POST['CourseDesc']
-        messages.success(request,'Course Added Successfully')
+    if request.method == 'POST':
+        c_name = request.POST['CourseName']
+        c_fees = request.POST['CourseFees']
+        c_duration = request.POST['CourseDuration']
+        c_desc = request.POST['CourseDesc']
+        messages.success(request, 'Course Added Successfully')
         Addcourse.objects.create(
-            course=c_name, fees= c_fees, duration= c_duration, desc= c_desc)
+            course=c_name, fees=c_fees, duration=c_duration, desc=c_desc)
         return redirect('/courses/')
+
 
 def addstudent(request):
     if request.method == "POST":
@@ -124,11 +126,9 @@ def addstudent(request):
             messages.success(request, "Student Added Successfully!!")
             stu = AddStudents.objects.all()
             addcourses = Addcourse.objects.all()
-            return render(request, 'viewstudents.html', {'stu': stu, 'addcourses': addcourses,})
-                                                             
+            return render(request, 'viewstudents.html', {'stu': stu, 'addcourses': addcourses, })
+
     else:
         stu = AddStudents.objects.all()
         addcourses = Addcourse.objects.all()
         return render(request, 'viewstudents.html', {'stu': stu, 'addcourses': addcourses})
-    
-   
