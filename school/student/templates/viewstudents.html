@@ -162,9 +162,10 @@
               
                 <a class="btn bg-gradient-dark mb-0" style="margin-left:810px;" href="javascript:;" data-bs-toggle="modal"
                   data-bs-target="#exampleModal"><i class="material-icons text-sm">add</i>Add Students</a>
-                  {% comment %} <div class="row">
+                  <div class="row">
                     
-                      <form class="form-inline my-2 my-lg-0" action="/search/" method="post" >
+                      <form class="form-inline my-2 my-lg-0" action="/search/"  >
+                        {% csrf_token %}
                         <div class="col-lg-4">
                           <input class="form-control mr-sm-2" name="q" type="search" placeholder="Search" aria-label="Search">
                         </div>
@@ -173,7 +174,7 @@
                         </div>                 
                       </form>viewstudents
  
-                  </div> {% endcomment %}
+                  </div> 
               </div>
 
           </div>

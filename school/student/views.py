@@ -3,7 +3,7 @@ from . models import *
 from django.contrib.auth.hashers import make_password, check_password
 from django.contrib import messages
 from django.contrib.auth import authenticate, login
-
+from django.db.models import Q
 
 # Create your views here.
 def index(request):
@@ -49,21 +49,19 @@ def Form_data(request):
 
 def loginform(request):
     if request.method == "POST":
-        User_email = request.POST['User_email']
-        password = request.POST['User_password']
-        if Formdata.objects.filter(email=User_email).exists():
-            obj = Formdata.objects.get(email=User_email)
-            pwd = obj.password
-            print(obj)
-            print("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
-            if check_password(pwd, password):
+        email = request.POST['email']
+        password = request.POST['password']
+        if Formdata.objects.filter(email=email).exists():
+            obj = Formdata.objects.get(email=email)
+            password = obj.password
+            if check_password(password, password):
                 return redirect('/dashboard/')
             else:
                 messages.error(request, 'Password incorrect')
                 return redirect('/')
-    else:
-        messages.error(request, 'Email is not registered')
-        return redirect('/')
+        else:
+            messages.error(request, 'Email is not registered')
+            return redirect('/')
 
 
 # def loginform(request):
@@ -132,3 +130,16 @@ def addstudent(request):
         stu = AddStudents.objects.all()
         addcourses = Addcourse.objects.all()
         return render(request, 'viewstudents.html', {'stu': stu, 'addcourses': addcourses})
+# Students Search Funcation
+def search(request):
+    if 'q' in request.GET:
+        q = request.GET['q']
+        multiple_q = Q(Q(sname__icontains=q) | Q(
+            semail__icontains=q)) | Q(smobile__icontains=q)
+        stu = AddStudents.objects.filter(multiple_q)
+    else:
+        stu = AddStudents.objects.all()
+    context = {
+        'stu': stu
+    }
+    return render(request, 'viewstudents.html', context)
